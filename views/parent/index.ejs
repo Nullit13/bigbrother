@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parent Control Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; }
+        .child-card { 
+            background: white;
+            border: 1px solid #ddd; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: box-shadow 0.3s;
+        }
+        .child-card:hover { 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .online { color: green; font-weight: bold; }
+        .offline { color: red; font-weight: bold; }
+        .child-name { font-size: 1.2em; font-weight: bold; color: #2196F3; }
+        .info { color: #666; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Parent Control Panel</h1>
+        
+        <% if (children && children.length > 0) { %>
+            <% children.forEach(child => { %>
+                <div class="child-card" onclick="window.location.href='/parent/child/<%= child._id %>'">
+                    <div class="child-name">💻 <%= child.name %></div>
+                    <div class="info">Computer ID: <%= child.computerId %></div>
+                    <div class="info">Status: <span class="<%= child.isOnline ? 'online' : 'offline' %>">
+                        <%= child.isOnline ? '● Online' : '○ Offline' %>
+                    </span></div>
+                    <div class="info">Last Active: <%= child.lastActive ? new Date(child.lastActive).toLocaleString() : 'Never' %></div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="child-card">
+                <p>📡 No computers connected yet.</p>
+                <p>Run the PowerShell script on the target computer to register it.</p>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

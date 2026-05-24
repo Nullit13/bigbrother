@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control <%= child.name %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .back-link { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+        h1 { color: #333; }
+        .command-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #cmd-input { 
+            width: 70%; 
+            padding: 12px; 
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button { 
+            padding: 12px 24px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button:hover { background: #1976D2; }
+        .result { 
+            background: #f9f9f9; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .command-history { margin-top: 20px; }
+        .response { 
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { color: green; background: #e8f5e9; }
+        .error { color: red; background: #ffebee; }
+        .timestamp { color: #999; font-size: 12px; margin-top: 5px; }
+        hr { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/parent" class="back-link">← Back to Children List</a>
+        <h1>🎮 Control Panel: <%= child.name %></h1>
+        <div class="info">Computer ID: <%= child.computerId %> | Status: <%= child.isOnline ? '🟢 Online' : '🔴 Offline' %></div>
+        
+        <div class="command-box">
+            <h3>📝 Send Command</h3>
+            <input type="text" id="cmd-input" placeholder="Enter command (e.g., ipconfig, dir, whoami)">
+            <button onclick="sendCommand()">Execute Command</button>
+            
+            <div id="response"></div>
+        </div>
+        
+        <div class="command-history">
+            <h3>📜 Command History</h3>
+            <% if (child.commands && child.commands.length > 0) { %>
+                <% child.commands.slice().reverse().forEach(cmd => { %>
+                    <div class="result">
+                        <strong>💻 Command:</strong> <%= cmd.command %><br>
+                        <strong>✅ Executed:</strong> <%= cmd.executed ? 'Yes' : 'No' %><br>
+                        <% if (cmd.result) { %>
+                            <strong>📤 Result:</strong><br>
+                            <pre><%= cmd.result %></pre>
+                        <% } %>
+                        <div class="timestamp">📅 <%= new Date(cmd.createdAt).toLocaleString() %></div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="result">No commands sent yet.</div>
+            <% } %>
+        </div>
+    </div>
+    
+    <script>
+        async function sendCommand() {
+            const cmd = document.getElementById('cmd-input').value;
+            if (!cmd) {
+                alert('Please enter a command');
+                return;
+            }
+            
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '<div class="response">⏳ Sending command...</div>';
+            
+            try {
+                const response = await fetch(`/api/command/<%= child._id %>`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    responseDiv.innerHTML = '<div class="response success">✓ Command sent successfully! Refreshing...</div>';
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    responseDiv.innerHTML = `<div class="response error">✗ Error: ${data.error}</div>`;
+                }
+            } catch (err) {
+                responseDiv.innerHTML = `<div class="response error">✗ Network error: ${err.message}</div>`;
+            }
+        }
+        
+        setInterval(() => {
+            location.reload();
+        }, 10000);
+    </script>
+</body>
+</html>

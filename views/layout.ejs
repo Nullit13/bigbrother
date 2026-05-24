@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>layout</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        nav { background: #333; padding: 10px; margin-bottom: 20px; }
+        nav a { color: white; text-decoration: none; margin-right: 15px; }
+        nav a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/parent">Parent Dashboard</a>
+        </nav>
+        <%- body %>
+    </div>
+</body>
+</html>
