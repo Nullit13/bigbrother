@@ -1,5 +1,5 @@
 {
-    "name": "parental-control",
+    "name": "big-brother",
     "version": "1.0.0",
     "scripts": {
         "start": "node server.js",
